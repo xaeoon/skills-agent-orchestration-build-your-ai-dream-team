@@ -1,0 +1,44 @@
+{
+  "projects": [
+    {
+      "name": "Contributor Onboarding",
+      "owner": "Mona Patel",
+      "status": "Active",
+      "recentActivity": "Published the first draft of the quick-start guide yesterday.",
+      "priority": "High",
+      "summary": "Make the path from first contribution to confident ownership easier for every teammate."
+    },
+    {
+      "name": "Design System Refresh",
+      "owner": "Alex Rivera",
+      "status": "In progress",
+      "recentActivity": "Completed accessibility review for the new form components this week.",
+      "priority": "High",
+      "summary": "Create a more consistent, accessible foundation for the team's product surfaces."
+    },
+    {
+      "name": "API Reliability",
+      "owner": "Jordan Lee",
+      "status": "At risk",
+      "recentActivity": "Investigating elevated timeout rates in the staging environment.",
+      "priority": "Critical",
+      "summary": "Reduce operational surprises by improving service health signals and response times."
+    },
+    {
+      "name": "Community Events",
+      "owner": "Sam Okafor",
+      "status": "Planned",
+      "recentActivity": "Shortlisted three venues for the next contributor meetup.",
+      "priority": "Medium",
+      "summary": "Bring contributors together for practical learning, feedback, and shared momentum."
+    },
+    {
+      "name": "Documentation Search",
+      "owner": "Priya Shah",
+      "status": "Complete",
+      "recentActivity": "Shipped improved relevance ranking and refreshed search analytics.",
+      "priority": "Low",
+      "summary": "Help people find the right answer quickly across the team's documentation."
+    }
+  ]
+}

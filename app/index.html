@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A contributor-friendly overview of current project health and activity.">
+    <title>Project Pulse</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="dashboard" aria-labelledby="page-title">
+      <header class="dashboard-header">
+        <div class="dashboard-header__content">
+          <p class="eyebrow">Mona's team workspace</p>
+          <h1 id="page-title">Project Pulse</h1>
+          <p class="dashboard-intro">
+            A quick read on what is moving, who owns it, and where the team should focus next.
+          </p>
+        </div>
+        <section class="dashboard-summary" aria-label="Project summary">
+          <div class="summary-item">
+            <strong id="project-count">—</strong>
+            <span>Projects tracked</span>
+          </div>
+          <div class="summary-item">
+            <strong id="active-count">—</strong>
+            <span>Active now</span>
+          </div>
+          <div class="summary-item">
+            <strong id="priority-count">—</strong>
+            <span>High priority</span>
+          </div>
+        </section>
+      </header>
+
+      <section class="project-list" aria-labelledby="project-list-heading">
+        <h2 id="project-list-heading" class="project-list__heading">Project overview</h2>
+        <p id="loading-message" class="empty-state" role="status">Loading project updates…</p>
+        <div id="project-grid" class="project-grid" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <script>
+      const projectGrid = document.querySelector("#project-grid");
+      const loadingMessage = document.querySelector("#loading-message");
+      const projectCount = document.querySelector("#project-count");
+      const activeCount = document.querySelector("#active-count");
+      const priorityCount = document.querySelector("#priority-count");
+
+      const normalize = (value) => String(value).toLowerCase().trim().replace(/\s+/g, "-");
+
+      const createText = (tagName, className, text) => {
+        const element = document.createElement(tagName);
+        element.className = className;
+        element.textContent = text;
+        return element;
+      };
+
+      const createBadge = (className, value, modifierPrefix) => {
+        const badge = createText("span", `${className} ${modifierPrefix}-${normalize(value)}`, value);
+        badge.dataset[modifierPrefix === "status" ? "status" : "priority"] = normalize(value);
+        return badge;
+      };
+
+      const createProjectCard = (project) => {
+        const article = document.createElement("article");
+        article.className = "project-card";
+
+        const header = document.createElement("header");
+        header.className = "project-card__header";
+        const titleGroup = document.createElement("div");
+        titleGroup.append(
+          createText("h3", "project-card__title", project.name),
+          createText("span", "project-card__owner", `Owner: ${project.owner}`)
+        );
+        header.append(titleGroup, createBadge("status-badge", project.status, "status"));
+
+        const summary = createText(
+          "p",
+          "project-card__summary",
+          project.summary || "A current team initiative tracked in Project Pulse."
+        );
+        const activity = document.createElement("p");
+        activity.className = "project-card__activity";
+        activity.append(
+          createText("strong", "", "Recent activity"),
+          document.createTextNode(project.recentActivity)
+        );
+
+        const footer = document.createElement("footer");
+        footer.className = "project-card__footer";
+        footer.append(
+          createText("span", "card-label", "Priority"),
+          createBadge("priority-badge", project.priority, "priority")
+        );
+
+        article.append(header, summary, activity, footer);
+        return article;
+      };
+
+      const showError = (message) => {
+        loadingMessage.className = "empty-state error-state";
+        loadingMessage.textContent = message;
+        loadingMessage.hidden = false;
+      };
+
+      fetch("project-data.json")
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Project data could not be loaded (${response.status}).`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (!data || !Array.isArray(data.projects)) {
+            throw new Error("Project data is missing its projects list.");
+          }
+          const projects = data.projects;
+          projectCount.textContent = projects.length;
+          activeCount.textContent = projects.filter((project) => normalize(project.status) === "active").length;
+          priorityCount.textContent = projects.filter((project) =>
+            ["high", "critical"].includes(normalize(project.priority))
+          ).length;
+          projects.forEach((project) => projectGrid.append(createProjectCard(project)));
+          loadingMessage.hidden = true;
+        })
+        .catch((error) => {
+          showError(`Unable to display project updates. ${error.message}`);
+        });
+    </script>
+  </body>
+</html>
